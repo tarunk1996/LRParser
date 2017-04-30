@@ -412,8 +412,7 @@ int count = 0;
                 col++;
             }
         }
-
-
+        
         for (int k = 0; k < lR0Items.size(); k++) {
             System.out.print("I"+k+" \t");
             for (int l = 0; l <term.size()+nonte.size() ; l++) {
