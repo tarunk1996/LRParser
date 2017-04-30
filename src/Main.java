@@ -10,12 +10,16 @@ public class Main {
     private static Map<Integer,List<String>> lR0Items = new HashMap<>();
     private static ArrayList<String> prodadd = new ArrayList<>();
     private static List<String> temppro = new ArrayList<>();
+    private static List<String> temp = new ArrayList<>();
+
+    private static HashMap<String, Integer> tab = new HashMap<String, Integer>();
+    private static HashMap< Integer,String> rtap = new HashMap<Integer, String>();
 
 
     private static Queue<String> queue = new LinkedList<>();
 
 
-    private static int i,j,k,n;
+    private static int i,j,n;
     private static ArrayList<String> production =new ArrayList<String>();
 
     private static List<String> storePro = null;
@@ -25,6 +29,11 @@ public class Main {
 
     private static Map<String,List<String>> checked = new HashMap<String,List<String>>();
     private static ArrayList<String> charList = new ArrayList<String>();
+
+    private static Set<String> nonte = new HashSet<>();
+    private static Set<String> term = new HashSet<>();
+
+    private static String[][] sLRParsingTab = new String[30][20];
 
 
 
@@ -60,6 +69,7 @@ public class Main {
             charList.add("Z");
             charList.add(c);
             StringBuilder stringBuilder = new StringBuilder();
+            nonte.add("Z");
 
 
 
@@ -89,7 +99,7 @@ public class Main {
             }
             tempProduction.add(stringBuilder.toString());
             map.put(c,tempProduction);
-
+            nonte.add(c);
             rmap.put(noOfProductions++,current.charAt(0)+"-"+stringBuilder.toString());
 
         }
@@ -206,7 +216,58 @@ int count = 0;
         }
 
 
+        findnonter();
+
         parsingTable();
+
+
+
+    }
+
+    private static void findnonter() {
+
+        System.out.println("Non Terminals : "+nonte);
+
+
+        for (String s : nonte) {
+
+            List<String> temp = new ArrayList<>();
+
+            temp = map.get(s);
+
+            for(String t : temp)
+            {
+                //System.out.println(t);
+
+                for (int l = 0; l <t.length() ; l++) {
+                    if(!(t.charAt(l)+"").matches("[A-Z]"))
+                    {
+                        term.add(t.charAt(l)+"");
+                    }
+                }
+
+            }
+            //System.out.println(s);
+
+        }
+
+
+        term.add("$");
+        System.out.println("Terminals "+term);
+
+
+        int k =0;
+        for(String s:term)
+        {
+            tab.put(s,k);
+            k++;
+        }
+        for(String s:nonte)
+        {
+            tab.put(s,k);
+            k++;
+        }
+        System.out.println("Rows "+tab);
 
 
 
@@ -215,15 +276,102 @@ int count = 0;
     public static void parsingTable()
     {
 
+
+        DataFile.charList = charList;
+        DataFile.map = map;
+        DataFile.initialiseTerminals();
+        FirstAndFollowSet Fs = new FirstAndFollowSet(map,charList);
+        Fs.firstAndFollowSet();
+        Map<String, ArrayList<String>> first = new HashMap<>();                                 // First Set
+        Map<String, ArrayList<String>> follow = new HashMap<>();                                // Follow Set
+        first = Fs.getFirst();
+        follow = Fs.getFollow();
+
+        System.out.println("Follow "+follow);
+
+
         for (int l = 0; l <lR0Items.size() ; l++) {
 
             temppro= lR0Items.get(l);
 
-            
+            int col =0;
 
+            for(String z : temppro)
+            {
+                int k;
+                int flag = 0;
+                for (k = 0; k <rmap.size() ; k++) {
+                    if(z.contains(rmap.get(k)))
+                    {
+                        flag=1;
+                        break;
+                    }
+                }
+
+
+
+
+
+                if(flag==1)
+                {
+                    for(String n: follow.get(rmap.get(k).charAt(0)+""))
+                    {
+                        sLRParsingTab[l][tab.get(n)]="R"+k;
+                    }
+                }
+                else
+                {
+                    int m;
+                    for ( m = 0; m <z.length() ; m++) {
+                        if(z.charAt(m)=='.')
+                        {
+                            //System.out.println("M"+z);
+                            //System.out.println("Check "+ z.charAt(m+1)+ "   "+tab.get(z.charAt(m+1)));
+                            sLRParsingTab[l][tab.get(z.charAt(m+1)+"")]="S"+checkItemSets(z);
+                            break;
+                        }
+                    }
+
+
+                }
+
+                col++;
+            }
+        }
+
+
+        for (int k = 0; k < lR0Items.size(); k++) {
+            for (int l = 0; l <term.size()+nonte.size() ; l++) {
+                System.out.print(sLRParsingTab[k][l]+"\t");
+            }
+            System.out.println("");
         }
 
     }
+
+    private static int checkItemSets(String st)
+    {
+        int k=0;
+
+        temp.clear();
+
+        int i=0;
+        while(st.charAt(i)!='.')
+        {
+            i++;
+        }
+        String te = st.substring(0,i)+st.charAt(i+1)+"."+st.substring(i+2);
+        temp.add(te);
+        checkSubsequent(te);
+
+        for (int j = 0; j <lR0Items.size() ; j++) {
+            if(temp.equals(lR0Items.get(j)))
+                return j;
+        }
+
+        return 0;
+    }
+
 
     public static void subsequent(String st) {
         int i=0;
@@ -249,5 +397,30 @@ int count = 0;
         }
 
     }
+
+    private static void checkSubsequent(String st)
+    {
+        int i=0;
+        while(st.charAt(i)!='.')
+        {
+            i++;
+        }
+        if(st.length()==i+1)
+        {
+            return;
+        }
+        if((st.charAt(i+1)+"").matches("[A-Z]"))
+        {
+            storePro = map.get(st.charAt(i+1)+"");
+            for (int j = 0; j < storePro.size(); j++) {
+                temp.add(st.charAt(i+1)+"-."+storePro.get(j).toString());
+                if((storePro.get(j).charAt(0)+"").matches("[A-Z]"))
+                {
+                    subsequent(st.charAt(i+1)+"-."+storePro.get(j).toString());
+                }
+            }
+        }
+    }
+
 
 }
