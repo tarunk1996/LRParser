@@ -220,6 +220,64 @@ int count = 0;
 
         parsingTable();
 
+        System.out.println("Enter the string you want to parse");
+        Scanner scanner = new Scanner(System.in);
+        String inp = scanner.nextLine();
+
+        System.out.println(inp);
+
+        parsingString(inp);
+
+
+    }
+
+    private static void parsingString(String inp) {
+
+        inp+="$";
+
+        Stack<String> stack = new Stack<>();
+
+        stack.push("0");
+
+        for (int k = 0; k <inp.length() ; k++) {
+
+            String ex = inp.charAt(k)+"";
+
+            String sc = stack.pop();
+            stack.push(sc);
+
+            String val = sLRParsingTab[Integer.parseInt(sc)][tab.get(ex)];
+
+            System.out.println(k +" :"+val);
+
+            if(val==null)
+            {
+                System.err.println("String Rejected");
+                break;
+            }
+            if((val.charAt(0)+"").equals("S"))
+            {
+                stack.push(inp.charAt(k)+"");
+                stack.push(val.charAt(1)+"");
+            }
+            else
+            {
+                String red = rmap.get(Integer.parseInt(val.charAt(1)+""));
+                System.out.println(red + "  "+ stack);
+                for (int l = 0; l < (red.length()-2)*2 ; l++) {
+                    stack.pop();
+                }
+                String num = stack.pop();
+                stack.push(num);
+                stack.push(red.charAt(0)+"");
+                stack.push(sLRParsingTab[Integer.parseInt(num)][tab.get(red.charAt(0)+"")]);
+
+
+
+            }
+            System.out.println("Stack"+stack);
+
+        }
 
 
     }
@@ -260,11 +318,13 @@ int count = 0;
         for(String s:term)
         {
             tab.put(s,k);
+            rtap.put(k,s);
             k++;
         }
         for(String s:nonte)
         {
             tab.put(s,k);
+            rtap.put(k,s);
             k++;
         }
         System.out.println("Rows "+tab);
@@ -288,6 +348,17 @@ int count = 0;
         follow = Fs.getFollow();
 
         System.out.println("Follow "+follow);
+
+
+        System.out.println("\nParsing Table \n");
+
+
+
+        System.out.print("Set\t");
+        for (int k = 0; k <rtap.size() ; k++) {
+            System.out.print(rtap.get(k)+" \t");
+        }
+        System.out.print("\n");
 
 
         for (int l = 0; l <lR0Items.size() ; l++) {
@@ -327,7 +398,10 @@ int count = 0;
                         {
                             //System.out.println("M"+z);
                             //System.out.println("Check "+ z.charAt(m+1)+ "   "+tab.get(z.charAt(m+1)));
-                            sLRParsingTab[l][tab.get(z.charAt(m+1)+"")]="S"+checkItemSets(z);
+                            if((z.charAt(m+1)+"").matches("[A-Z]"))
+                                sLRParsingTab[l][tab.get(z.charAt(m+1)+"")]=""+checkItemSets(z);
+                            else
+                                sLRParsingTab[l][tab.get(z.charAt(m+1)+"")]="S"+checkItemSets(z);
                             break;
                         }
                     }
@@ -341,10 +415,14 @@ int count = 0;
 
 
         for (int k = 0; k < lR0Items.size(); k++) {
+            System.out.print("I"+k+" \t");
             for (int l = 0; l <term.size()+nonte.size() ; l++) {
-                System.out.print(sLRParsingTab[k][l]+"\t");
+                if(sLRParsingTab[k][l]!=null)
+                    System.out.print(sLRParsingTab[k][l]+"\t");
+                else
+                    System.out.print(" \t");
             }
-            System.out.println("");
+            System.out.println(" ");
         }
 
     }

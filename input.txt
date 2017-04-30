@@ -1,2 +1,2 @@
-A->aAb|B
+A->aA|B
 B->cd
