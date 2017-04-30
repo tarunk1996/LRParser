@@ -272,6 +272,7 @@ int count = 0;
                 stack.push(red.charAt(0)+"");
                 stack.push(sLRParsingTab[Integer.parseInt(num)][tab.get(red.charAt(0)+"")]);
 
+                k--;
 
 
             }
@@ -379,10 +380,6 @@ int count = 0;
                     }
                 }
 
-
-
-
-
                 if(flag==1)
                 {
                     for(String n: follow.get(rmap.get(k).charAt(0)+""))
@@ -406,13 +403,12 @@ int count = 0;
                         }
                     }
 
-
                 }
 
                 col++;
             }
         }
-        
+
         for (int k = 0; k < lR0Items.size(); k++) {
             System.out.print("I"+k+" \t");
             for (int l = 0; l <term.size()+nonte.size() ; l++) {
@@ -445,6 +441,8 @@ int count = 0;
             if(temp.equals(lR0Items.get(j)))
                 return j;
         }
+
+        //System.out.println(temp);
 
         return 0;
     }
@@ -493,7 +491,7 @@ int count = 0;
                 temp.add(st.charAt(i+1)+"-."+storePro.get(j).toString());
                 if((storePro.get(j).charAt(0)+"").matches("[A-Z]"))
                 {
-                    subsequent(st.charAt(i+1)+"-."+storePro.get(j).toString());
+                    checkSubsequent(st.charAt(i+1)+"-."+storePro.get(j).toString());
                 }
             }
         }
