@@ -106,9 +106,9 @@ public class Main {
         }
 
 
-        System.out.println(rmap);
+        //System.out.println(rmap);
 
-        System.out.println(map);
+        //System.out.println(map);
 
 
 
@@ -125,8 +125,8 @@ public class Main {
 
         lR0Items.put(lR0Items.size(),abc);
 
-        System.out.println("pro:"+temppro);
-        System.out.println("LR" + lR0Items);
+        //System.out.println("pro:"+temppro);
+        //System.out.println("LR" + lR0Items);
 
 
 
@@ -141,8 +141,8 @@ public class Main {
             curr=curr.substring(1);
 
             //prodadd.add(curr);
-            System.out.println("Under Con:"+curr);
-            System.out.println("LR0"+lR0Items);
+            //System.out.println("Under Con:"+curr);
+            //System.out.println("LR0"+lR0Items);
 
 
 
@@ -161,10 +161,10 @@ public class Main {
                 curr=te;
                 prodadd.clear();
                 prodadd.add(curr);
-                System.out.println("Update :"+curr);
+                //System.out.println("Update :"+curr);
                 queue.add(Character.toString((char)lR0Items.size())+curr);
                 subsequent(curr);
-                System.out.println("proad :"+prodadd);
+                //System.out.println("proad :"+prodadd);
 
                 Queue<String> copyqueue = new LinkedList<>(queue);
 
@@ -174,7 +174,7 @@ public class Main {
 
                     if((tal.charAt(0)+"").equals(examine.charAt(0)+""))
                     {
-                        System.out.println("EX :" +examine+" "+tal+" "+consid+ " ");
+                        //System.out.println("EX :" +examine+" "+tal+" "+consid+ " ");
                         i=0;
                         //curr=examine.substring(1);
                         while(examine.charAt(i)!='.')
@@ -184,9 +184,9 @@ public class Main {
                         //System.out.print(examine.charAt(i+1));
                         if(examine.length()>i+1&&(examine.charAt(i+1)+"").equals(consid))
                         {
-                            System.out.println("\t\tCHK :" + examine + " "+consid);
+                            //System.out.println("\t\tCHK :" + examine + " "+consid);
                             queue.remove(examine);
-                            System.out.println("Working Here");
+                            //System.out.println("Working Here");
                             curr=examine;
                             te = curr.substring(1,i)+curr.charAt(i+1)+".";
                             if(curr.length()!=i+2)
@@ -240,13 +240,33 @@ public class Main {
             prodadd.clear();
 
 
-            System.out.println("Queue :"+queue);
+            //System.out.println("Queue :"+queue);
 
             /*if(queue.size()>100)
                 queue.clear();*/
 
         }
 
+
+        //System.out.println("LR0 items"+lR0Items);
+
+        System.out.println("LR(0) items");
+
+        for (int k = 0; k <lR0Items.size() ; k++) {
+            System.out.println("\nI"+k+" Set :");
+            System.out.print("{");
+
+            for (String s : lR0Items.get(k))
+            {
+                System.out.println("\t"+s);
+            }
+
+            System.out.print("}");
+
+        }
+
+
+        System.out.print("\n");
 
         findnonter();
 
@@ -348,6 +368,7 @@ public class Main {
 
         }
 
+        nonte.remove("Z");
 
         term.add("$");
         System.out.println("Terminals "+term);
@@ -386,18 +407,20 @@ public class Main {
         first = Fs.getFirst();
         follow = Fs.getFollow();
 
-        System.out.println("Follow "+follow);
+        //System.out.println("Follow "+follow);
 
 
         System.out.println("\nParsing Table \n");
 
 
+        System.out.print("\n-------------------------------------------------------------\n");
 
-        System.out.print("Set\t");
+        System.out.print("Set\t|\t");
         for (int k = 0; k <rtap.size() ; k++) {
-            System.out.print(rtap.get(k)+" \t");
+            System.out.print(rtap.get(k)+" \t|\t");
         }
-        System.out.print("\n");
+        System.out.print("\n-------------------------------------------------------------\n");
+
 
 
         for (int l = 0; l <lR0Items.size() ; l++) {
@@ -452,16 +475,16 @@ public class Main {
         }
 
         for (int k = 0; k < lR0Items.size(); k++) {
-            System.out.print("I"+k+" \t");
+            System.out.print("I"+k+" \t|\t");
             for (int l = 0; l <term.size()+nonte.size() ; l++) {
                 if(sLRParsingTab[k][l]!=null)
-                    System.out.print(sLRParsingTab[k][l]+"\t");
+                    System.out.print(sLRParsingTab[k][l]+"\t|\t");
                 else
-                    System.out.print(" \t");
+                    System.out.print(" \t|\t");
             }
             System.out.println(" ");
         }
-
+        System.out.print("-------------------------------------------------------------\n");
     }
 
     private static int checkItemSets(String st)
