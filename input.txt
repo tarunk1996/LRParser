@@ -1,2 +1,1 @@
-A->aAb|B
-B->cd
+E->E+E|E*E|(E)|i

@@ -19,6 +19,7 @@ public class Main {
     private static Queue<String> queue = new LinkedList<>();
 
 
+    private static int count = 0;
     private static int i,j,n;
     private static ArrayList<String> production =new ArrayList<String>();
 
@@ -106,7 +107,9 @@ public class Main {
 
 
         System.out.println(rmap);
+
         System.out.println(map);
+
 
 
 
@@ -114,7 +117,7 @@ public class Main {
         storePro = map.get("Z");
         String st;
         st="Z-"+"."+storePro.get(0).toString();
-        queue.add("Z-"+"."+storePro.get(0).toString());
+        queue.add(Character.toString((char)lR0Items.size())+"Z-"+"."+storePro.get(0).toString());
         prodadd.add(st);
         subsequent(st);
         ArrayList<String> abc = new ArrayList<String>(prodadd);
@@ -126,25 +129,31 @@ public class Main {
         System.out.println("LR" + lR0Items);
 
 
-int count = 0;
+
 
         while (!queue.isEmpty()&&count<30)
         {
             count++;
             String curr = queue.remove();
 
-           //prodadd.add(curr);
+            String tal = curr;
+
+            curr=curr.substring(1);
+
+            //prodadd.add(curr);
             System.out.println("Under Con:"+curr);
             System.out.println("LR0"+lR0Items);
 
 
-            int i=0;
+
+            int i = 0;
             while(curr.charAt(i)!='.')
             {
                 i++;
             }
             if(curr.length()>i+1)
             {
+                String consid = curr.charAt(i+1)+"";
                 String te = curr.substring(0,i)+curr.charAt(i+1)+".";
                 if(curr.length()!=i+2)
                     te+=curr.substring(i+2);
@@ -153,40 +162,61 @@ int count = 0;
                 prodadd.clear();
                 prodadd.add(curr);
                 System.out.println("Update :"+curr);
-                queue.add(curr);
+                queue.add(Character.toString((char)lR0Items.size())+curr);
                 subsequent(curr);
                 System.out.println("proad :"+prodadd);
+
+                Queue<String> copyqueue = new LinkedList<>(queue);
+
+                for (int j = 0; j <copyqueue.size() ; j++) {
+
+                    String examine = copyqueue.remove();
+
+                    if((tal.charAt(0)+"").equals(examine.charAt(0)+""))
+                    {
+                        System.out.println("EX :" +examine+" "+tal+" "+consid+ " ");
+                        i=0;
+                        //curr=examine.substring(1);
+                        while(examine.charAt(i)!='.')
+                        {
+                            i++;
+                        }
+                        //System.out.print(examine.charAt(i+1));
+                        if(examine.length()>i+1&&(examine.charAt(i+1)+"").equals(consid))
+                        {
+                            System.out.println("\t\tCHK :" + examine + " "+consid);
+                            queue.remove(examine);
+                            System.out.println("Working Here");
+                            curr=examine;
+                            te = curr.substring(1,i)+curr.charAt(i+1)+".";
+                            if(curr.length()!=i+2)
+                                te+=curr.substring(i+2);
+
+                            curr=te;
+                            //prodadd.clear();
+                            if(prodadd.contains(curr))
+                                continue;
+                            prodadd.add(curr);
+                            //System.out.println("Update :"+curr);
+                            queue.add(Character.toString((char)lR0Items.size())+curr);
+                            subsequent(curr);
+                            //System.out.println("proad :"+prodadd);
+                        }
+                        else
+                            continue;
+                    }
+                    else
+                    {
+                        break;
+                    }
+
+                }
+
             }
             else
             {
                 continue;
             }
-
-
-            /*if(curr.matches("^(.*?(\\.+[A-Z])[^$]*)"))
-            {
-                int i=0;
-                while(curr.charAt(i)!='.')
-                {
-                    i++;
-                }
-                //System.out.println(i);
-                //System.out.println(curr.charAt(i+1));
-                if((curr.charAt(i+1)+"").matches("[A-Z]"))
-                {
-
-                    storePro = map.get(curr.charAt(i+1)+"");
-                    for (int j = 0; j < storePro.size(); j++) {
-                        queue.add(curr.charAt(i+1)+"-."+storePro.get(j).toString());
-                        prodadd.add(curr.charAt(i+1)+"-."+storePro.get(j).toString());
-                    }
-                }
-            }
-            else {
-
-
-            }*/
-
 
             boolean flag = false;
 
@@ -209,6 +239,8 @@ int count = 0;
 
             prodadd.clear();
 
+
+            System.out.println("Queue :"+queue);
 
             /*if(queue.size()>100)
                 queue.clear();*/
@@ -262,6 +294,12 @@ int count = 0;
             }
             else
             {
+                if(val.equals("R0"))
+                {
+                    System.out.println("String Accepted");
+                    break;
+                }
+
                 String red = rmap.get(Integer.parseInt(val.charAt(1)+""));
                 System.out.println(red + "  "+ stack);
                 for (int l = 0; l < (red.length()-2)*2 ; l++) {
@@ -393,10 +431,14 @@ int count = 0;
                     for ( m = 0; m <z.length() ; m++) {
                         if(z.charAt(m)=='.')
                         {
+                            if(sLRParsingTab[l][tab.get(z.charAt(m+1)+"")]==null)
                             //System.out.println("M"+z);
                             //System.out.println("Check "+ z.charAt(m+1)+ "   "+tab.get(z.charAt(m+1)));
                             if((z.charAt(m+1)+"").matches("[A-Z]"))
+                            {
                                 sLRParsingTab[l][tab.get(z.charAt(m+1)+"")]=""+checkItemSets(z);
+                                //System.out.println(z);
+                            }
                             else
                                 sLRParsingTab[l][tab.get(z.charAt(m+1)+"")]="S"+checkItemSets(z);
                             break;
@@ -438,10 +480,14 @@ int count = 0;
         checkSubsequent(te);
 
         for (int j = 0; j <lR0Items.size() ; j++) {
-            if(temp.equals(lR0Items.get(j)))
+            if(lR0Items.get(j).equals(temp))
                 return j;
         }
 
+        for (int j = 0; j <lR0Items.size() ; j++) {
+            if(lR0Items.get(j).containsAll(temp))
+                return j;
+        }
         //System.out.println(temp);
 
         return 0;
@@ -450,6 +496,7 @@ int count = 0;
 
     public static void subsequent(String st) {
         int i=0;
+        //System.out.println("ST :"+st);
         while(st.charAt(i)!='.')
         {
             i++;
@@ -462,7 +509,11 @@ int count = 0;
         {
             storePro = map.get(st.charAt(i+1)+"");
             for (int j = 0; j < storePro.size(); j++) {
-                queue.add(st.charAt(i+1)+"-."+storePro.get(j).toString());
+                queue.add(Character.toString((char)lR0Items.size())+st.charAt(i+1)+"-."+storePro.get(j).toString());
+                if(prodadd.contains(st.charAt(i+1)+"-."+storePro.get(j).toString()))
+                {
+                    return;
+                }
                 prodadd.add(st.charAt(i+1)+"-."+storePro.get(j).toString());
                 if((storePro.get(j).charAt(0)+"").matches("[A-Z]"))
                 {
@@ -489,6 +540,10 @@ int count = 0;
             storePro = map.get(st.charAt(i+1)+"");
             for (int j = 0; j < storePro.size(); j++) {
                 temp.add(st.charAt(i+1)+"-."+storePro.get(j).toString());
+                if(temp.contains(st.charAt(i+1)+"-."+storePro.get(j).toString()))
+                {
+                    continue;
+                }
                 if((storePro.get(j).charAt(0)+"").matches("[A-Z]"))
                 {
                     checkSubsequent(st.charAt(i+1)+"-."+storePro.get(j).toString());
